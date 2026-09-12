@@ -1,0 +1,9 @@
+// Auth route group layout — no sidebar, no header.
+// Wraps /login and /signup in a centred, full-page layout.
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-background">
+      {children}
+    </main>
+  )
+}
