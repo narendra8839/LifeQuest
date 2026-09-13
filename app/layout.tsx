@@ -14,6 +14,17 @@ const playfair = Playfair_Display({
   display: "swap",
 })
 
+function getBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim()
+  if (envUrl) {
+    return envUrl.startsWith("http") ? envUrl : `https://${envUrl}`
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return "http://localhost:3000"
+}
+
 export const metadata: Metadata = {
   title: {
     default: "LifeQuest — Gamify Your Life",
@@ -24,7 +35,7 @@ export const metadata: Metadata = {
   keywords: ["productivity", "gamification", "RPG", "quests", "habits", "goal tracker"],
   authors: [{ name: "LifeQuest" }],
   creator: "LifeQuest",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(getBaseUrl()),
   openGraph: {
     type: "website",
     locale: "en_US",
