@@ -5,25 +5,29 @@ import { PROTECTED_ROUTES, AUTH_ROUTES, NAV_ROUTES } from "@/lib/constants"
 /**
  * middleware — runs on every matching request.
  * 1. Refreshes the Supabase session cookie.
- * 2. Redirects unauthenticated users from protected routes to /login.
- * 3. Redirects authenticated users away from auth routes to /dashboard.
+ * 2. Recognizes Supabase Auth sessions and Guest Hero sessions.
+ * 3. Redirects unauthenticated users from protected routes to /login.
+ * 4. Redirects authenticated users away from auth routes to /dashboard.
  */
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
   const { pathname }               = request.nextUrl
 
+  const isGuest = request.cookies.get("lifequest_guest_session")?.value === "true"
+  const isAuthenticated = !!user || isGuest
+
   const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r))
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r))
 
   // Unauthenticated user trying to access a protected route
-  if (isProtected && !user) {
+  if (isProtected && !isAuthenticated) {
     const loginUrl = new URL(NAV_ROUTES.login, request.url)
     loginUrl.searchParams.set("redirectTo", pathname)
     return NextResponse.redirect(loginUrl)
   }
 
   // Authenticated user hitting a login/signup page
-  if (isAuthRoute && user) {
+  if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL(NAV_ROUTES.dashboard, request.url))
   }
 

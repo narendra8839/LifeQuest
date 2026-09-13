@@ -13,7 +13,7 @@ export const achievementService = {
       .order("name")
 
     if (error) throw error
-    return data ?? []
+    return (data ?? []) as Achievement[]
   },
 
   async getUserAchievements(userId: string): Promise<UserAchievement[]> {
@@ -24,18 +24,18 @@ export const achievementService = {
       .eq("user_id", userId)
 
     if (error) throw error
-    return data ?? []
+    return (data ?? []) as UserAchievement[]
   },
 
   async unlockAchievement(userId: string, achievementId: string): Promise<UserAchievement> {
     const supabase = await createClient()
     const { data, error } = await supabase
       .from("user_achievements")
-      .insert({ user_id: userId, achievement_id: achievementId, unlocked_at: new Date().toISOString() })
+      .insert({ user_id: userId, achievement_id: achievementId, unlocked_at: new Date().toISOString() } as any)
       .select()
       .single()
 
     if (error) throw error
-    return data
+    return data as UserAchievement
   },
 }

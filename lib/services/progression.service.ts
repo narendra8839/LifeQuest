@@ -17,21 +17,20 @@ export const progressionService = {
   ): Promise<{ newLevel: number; leveledUp: boolean }> {
     const supabase = await createClient()
 
-    const { data: profile, error } = await supabase
-      .from("profiles")
+    const { data: profile, error } = await (supabase.from("profiles") as any)
       .select("xp, level, gold")
       .eq("id", userId)
       .single()
 
     if (error || !profile) throw error ?? new Error("Profile not found")
 
-    const newXp    = profile.xp   + xpReward
-    const newGold  = profile.gold  + goldReward
+    const currentProfile = profile as { xp: number; level: number; gold: number }
+    const newXp    = currentProfile.xp   + xpReward
+    const newGold  = currentProfile.gold  + goldReward
     const newLevel = calculateLevel(newXp)
-    const leveledUp = newLevel > profile.level
+    const leveledUp = newLevel > currentProfile.level
 
-    await supabase
-      .from("profiles")
+    await (supabase.from("profiles") as any)
       .update({ xp: newXp, gold: newGold, level: newLevel, updated_at: new Date().toISOString() })
       .eq("id", userId)
 
@@ -44,16 +43,15 @@ export const progressionService = {
   async incrementStreak(userId: string): Promise<number> {
     const supabase = await createClient()
 
-    const { data: profile } = await supabase
-      .from("profiles")
+    const { data: profile } = await (supabase.from("profiles") as any)
       .select("streak")
       .eq("id", userId)
       .single()
 
-    const newStreak = (profile?.streak ?? 0) + 1
+    const currentProfile = profile as { streak: number } | null
+    const newStreak = (currentProfile?.streak ?? 0) + 1
 
-    await supabase
-      .from("profiles")
+    await (supabase.from("profiles") as any)
       .update({ streak: newStreak, updated_at: new Date().toISOString() })
       .eq("id", userId)
 
@@ -65,8 +63,7 @@ export const progressionService = {
    */
   async resetStreak(userId: string): Promise<void> {
     const supabase = await createClient()
-    await supabase
-      .from("profiles")
+    await (supabase.from("profiles") as any)
       .update({ streak: 0, updated_at: new Date().toISOString() })
       .eq("id", userId)
   },

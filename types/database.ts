@@ -1,13 +1,3 @@
-/**
- * database.ts — Supabase generated types placeholder.
- *
- * Replace this file with the output of:
- *   npx supabase gen types typescript --project-id <your-project-id> > types/database.ts
- *
- * The Database generic type is used to give full type-safety to all
- * Supabase client queries throughout the app.
- */
-
 export type Json =
   | string
   | number
@@ -43,14 +33,17 @@ export interface Database {
           updated_at?: string
         }
         Update: {
+          id?:        string
           username?:  string | null
           avatar?:    string | null
           level?:     number
           xp?:        number
           gold?:      number
           streak?:    number
+          created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       attributes: {
         Row: {
@@ -72,12 +65,23 @@ export interface Database {
           creativity?: number
         }
         Update: {
+          id?:         string
+          user_id?:    string
           intellect?:  number
           strength?:   number
           discipline?: number
           vitality?:   number
           creativity?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "attributes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       quests: {
         Row: {
@@ -107,6 +111,8 @@ export interface Database {
           completed_at?: string | null
         }
         Update: {
+          id?:          string
+          user_id?:     string
           title?:        string
           description?:  string | null
           category?:     string
@@ -114,8 +120,18 @@ export interface Database {
           xp_reward?:    number
           gold_reward?:  number
           completed?:    boolean
+          created_at?:   string
           completed_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "quests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       achievements: {
         Row: {
@@ -131,12 +147,13 @@ export interface Database {
           id?:         string
           name:        string
           description: string
-          requirement: Json
+          requirement?: Json
           reward_xp?:  number
           reward_gold?: number
           icon?:       string
         }
         Update: {
+          id?:         string
           name?:        string
           description?: string
           requirement?: Json
@@ -144,6 +161,7 @@ export interface Database {
           reward_gold?: number
           icon?:        string
         }
+        Relationships: []
       }
       user_achievements: {
         Row: {
@@ -159,12 +177,32 @@ export interface Database {
           unlocked_at?:   string
         }
         Update: {
-          unlocked_at?: string
+          id?:            string
+          user_id?:       string
+          achievement_id?: string
+          unlocked_at?:   string
         }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
-    Views:   Record<string, never>
+    Views: Record<string, never>
     Functions: Record<string, never>
-    Enums:   Record<string, never>
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }

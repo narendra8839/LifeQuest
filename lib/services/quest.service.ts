@@ -8,44 +8,41 @@ import type { Quest, CreateQuestInput, UpdateQuestInput } from "@/types/quest"
 export const questService = {
   async getAll(userId: string): Promise<Quest[]> {
     const supabase = await createClient()
-    const { data, error } = await supabase
-      .from("quests")
+    const { data, error } = await (supabase.from("quests") as any)
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
 
     if (error) throw error
-    return data ?? []
+    return (data ?? []) as Quest[]
   },
 
   async create(input: CreateQuestInput): Promise<Quest> {
     const supabase = await createClient()
-    const { data, error } = await supabase
-      .from("quests")
+    const { data, error } = await (supabase.from("quests") as any)
       .insert(input)
       .select()
       .single()
 
     if (error) throw error
-    return data
+    return data as Quest
   },
 
   async update(id: string, input: UpdateQuestInput): Promise<Quest> {
     const supabase = await createClient()
-    const { data, error } = await supabase
-      .from("quests")
+    const { data, error } = await (supabase.from("quests") as any)
       .update(input)
       .eq("id", id)
       .select()
       .single()
 
     if (error) throw error
-    return data
+    return data as Quest
   },
 
   async delete(id: string): Promise<void> {
     const supabase = await createClient()
-    const { error } = await supabase.from("quests").delete().eq("id", id)
+    const { error } = await (supabase.from("quests") as any).delete().eq("id", id)
     if (error) throw error
   },
 
